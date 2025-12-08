@@ -43,6 +43,14 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request): RedirectResponse
     {
+        if (! $request->user()->organization->canCreateTask()) {
+            $limit = $request->user()->organization->getTaskLimit();
+
+            return redirect()
+                ->route('billing.index')
+                ->with('error', "You've reached your limit of {$limit} tasks. Upgrade to create more.");
+        }
+
         $validated = $request->validated();
 
         Task::create([

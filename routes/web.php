@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -10,6 +11,7 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
@@ -54,4 +56,24 @@ Route::middleware(['auth'])->group(function () {
         ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::resource('projects', ProjectController::class);
+
+    Route::controller(BillingController::class)->group(function () {
+        Route::get('billing', 'index')->name('billing.index')->can('manage-billing');
+        Route::post('billing/subscribe', 'subscribe')->name('billing.subscribe')->can('manage-billing');
+        Route::post('billing/portal', 'portal')->name('billing.portal')->can('manage-billing');
+        Route::post('billing/cancel', 'cancel')->name('billing.cancel')->can('manage-billing');
+        Route::post('billing/resume', 'resume')->name('billing.resume')->can('manage-billing');
+    });
+
+    Route::get('billing/success', function () {
+        return redirect()->route('billing.index')
+            ->with('success', 'Subscription activated successfully!');
+    })->name('billing.success');
+
+    Route::get('billing/checkout-cancel', function () {
+        return redirect()->route('billing.index')
+            ->with('info', 'Checkout cancelled.');
+    })->name('billing.checkout-cancel');
 });
+
+Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');

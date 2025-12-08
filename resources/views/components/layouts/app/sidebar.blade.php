@@ -20,6 +20,9 @@
                     @can('viewAny', App\Models\Project::class)
                         <flux:navlist.item icon="folder" :href="route('projects.index')" :current="request()->routeIs('projects.*')" wire:navigate>{{ __('Projects') }}</flux:navlist.item>
                     @endcan
+                    @can('manage-billing')
+                        <flux:navlist.item icon="credit-card" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>{{ __('Billing') }}</flux:navlist.item>
+                    @endcan
                 </flux:navlist.group>
 
                 @can('users.viewAny')
