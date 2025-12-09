@@ -79,4 +79,11 @@ class UserFactory extends Factory
             $user->syncRoles([RoleEnum::Viewer]);
         });
     }
+
+    public function withProjectAccess(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'organization_id' => Organization::factory()->withProSubscription(),
+        ]);
+    }
 }

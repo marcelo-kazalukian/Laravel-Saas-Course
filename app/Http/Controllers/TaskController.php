@@ -29,8 +29,15 @@ class TaskController extends Controller
     {
         Gate::authorize('view', $task);
 
+        $activities = $task->activities()
+            ->with('causer')
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get();
+
         return view('tasks.show', [
             'task' => $task,
+            'activities' => $activities,
         ]);
     }
 

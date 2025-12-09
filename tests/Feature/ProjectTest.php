@@ -9,7 +9,7 @@ test('guests cannot access projects index', function () {
 });
 
 test('admin users can view projects index', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
 
     $this->actingAs($adminUser)
         ->get(route('projects.index'))
@@ -18,7 +18,7 @@ test('admin users can view projects index', function () {
 });
 
 test('regular users can view projects index', function () {
-    $regularUser = User::factory()->asUser()->create();
+    $regularUser = User::factory()->withProjectAccess()->asUser()->create();
 
     $this->actingAs($regularUser)
         ->get(route('projects.index'))
@@ -27,7 +27,7 @@ test('regular users can view projects index', function () {
 });
 
 test('viewers can view projects index', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
 
     $this->actingAs($viewerUser)
         ->get(route('projects.index'))
@@ -36,8 +36,8 @@ test('viewers can view projects index', function () {
 });
 
 test('users can only see projects from their organization', function () {
-    $organization1 = Organization::factory()->create(['name' => 'Org 1']);
-    $organization2 = Organization::factory()->create(['name' => 'Org 2']);
+    $organization1 = Organization::factory()->withProSubscription()->create(['name' => 'Org 1']);
+    $organization2 = Organization::factory()->withProSubscription()->create(['name' => 'Org 2']);
 
     $user1 = User::factory()->asAdmin()->create(['organization_id' => $organization1->id]);
     $user2 = User::factory()->asAdmin()->create(['organization_id' => $organization2->id]);
@@ -62,7 +62,7 @@ test('users can only see projects from their organization', function () {
 });
 
 test('admin users can view create project page', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
 
     $this->actingAs($adminUser)
         ->get(route('projects.create'))
@@ -71,7 +71,7 @@ test('admin users can view create project page', function () {
 });
 
 test('regular users can view create project page', function () {
-    $regularUser = User::factory()->asUser()->create();
+    $regularUser = User::factory()->withProjectAccess()->asUser()->create();
 
     $this->actingAs($regularUser)
         ->get(route('projects.create'))
@@ -80,7 +80,7 @@ test('regular users can view create project page', function () {
 });
 
 test('viewers cannot view create project page', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
 
     $this->actingAs($viewerUser)
         ->get(route('projects.create'))
@@ -88,7 +88,7 @@ test('viewers cannot view create project page', function () {
 });
 
 test('admin users can create a project', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
 
     $this->actingAs($adminUser)
         ->post(route('projects.store'), [
@@ -107,7 +107,7 @@ test('admin users can create a project', function () {
 });
 
 test('viewers cannot create a project', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
 
     $this->actingAs($viewerUser)
         ->post(route('projects.store'), [
@@ -121,7 +121,7 @@ test('viewers cannot create a project', function () {
 });
 
 test('project name is required when creating', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
 
     $this->actingAs($adminUser)
         ->post(route('projects.store'), [
@@ -136,7 +136,7 @@ test('project name is required when creating', function () {
 });
 
 test('admin users can view project show page', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
     $project = Project::factory()->create([
         'organization_id' => $adminUser->organization_id,
         'user_id' => $adminUser->id,
@@ -149,7 +149,7 @@ test('admin users can view project show page', function () {
 });
 
 test('viewers can view project show page', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
     $project = Project::factory()->create([
         'organization_id' => $viewerUser->organization_id,
         'user_id' => $viewerUser->id,
@@ -162,8 +162,8 @@ test('viewers can view project show page', function () {
 });
 
 test('users cannot view projects from other organizations', function () {
-    $organization1 = Organization::factory()->create();
-    $organization2 = Organization::factory()->create();
+    $organization1 = Organization::factory()->withProSubscription()->create();
+    $organization2 = Organization::factory()->withProSubscription()->create();
 
     $user1 = User::factory()->asAdmin()->create(['organization_id' => $organization1->id]);
     $user2 = User::factory()->asAdmin()->create(['organization_id' => $organization2->id]);
@@ -179,7 +179,7 @@ test('users cannot view projects from other organizations', function () {
 });
 
 test('admin users can view edit project page', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
     $project = Project::factory()->create([
         'organization_id' => $adminUser->organization_id,
         'user_id' => $adminUser->id,
@@ -193,7 +193,7 @@ test('admin users can view edit project page', function () {
 });
 
 test('viewers cannot view edit project page', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
     $project = Project::factory()->create([
         'organization_id' => $viewerUser->organization_id,
         'user_id' => $viewerUser->id,
@@ -205,7 +205,7 @@ test('viewers cannot view edit project page', function () {
 });
 
 test('admin users can update projects', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
     $project = Project::factory()->create([
         'name' => 'Original Name',
         'description' => 'Original Description',
@@ -229,7 +229,7 @@ test('admin users can update projects', function () {
 });
 
 test('viewers cannot update projects', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
     $project = Project::factory()->create([
         'name' => 'Original Name',
         'organization_id' => $viewerUser->organization_id,
@@ -249,8 +249,8 @@ test('viewers cannot update projects', function () {
 });
 
 test('users cannot update projects from other organizations', function () {
-    $organization1 = Organization::factory()->create();
-    $organization2 = Organization::factory()->create();
+    $organization1 = Organization::factory()->withProSubscription()->create();
+    $organization2 = Organization::factory()->withProSubscription()->create();
 
     $user1 = User::factory()->asAdmin()->create(['organization_id' => $organization1->id]);
     $user2 = User::factory()->asAdmin()->create(['organization_id' => $organization2->id]);
@@ -274,7 +274,7 @@ test('users cannot update projects from other organizations', function () {
 });
 
 test('admin users can delete projects', function () {
-    $adminUser = User::factory()->asAdmin()->create();
+    $adminUser = User::factory()->withProjectAccess()->asAdmin()->create();
     $project = Project::factory()->create([
         'organization_id' => $adminUser->organization_id,
         'user_id' => $adminUser->id,
@@ -285,13 +285,13 @@ test('admin users can delete projects', function () {
         ->assertRedirect(route('projects.index'))
         ->assertSessionHas('success', 'Project deleted successfully.');
 
-    $this->assertDatabaseMissing('projects', [
+    $this->assertSoftDeleted('projects', [
         'id' => $project->id,
     ]);
 });
 
 test('regular users cannot delete projects', function () {
-    $regularUser = User::factory()->asUser()->create();
+    $regularUser = User::factory()->withProjectAccess()->asUser()->create();
     $project = Project::factory()->create([
         'organization_id' => $regularUser->organization_id,
         'user_id' => $regularUser->id,
@@ -307,7 +307,7 @@ test('regular users cannot delete projects', function () {
 });
 
 test('viewers cannot delete projects', function () {
-    $viewerUser = User::factory()->asViewer()->create();
+    $viewerUser = User::factory()->withProjectAccess()->asViewer()->create();
     $project = Project::factory()->create([
         'organization_id' => $viewerUser->organization_id,
         'user_id' => $viewerUser->id,
@@ -323,8 +323,8 @@ test('viewers cannot delete projects', function () {
 });
 
 test('users cannot delete projects from other organizations', function () {
-    $organization1 = Organization::factory()->create();
-    $organization2 = Organization::factory()->create();
+    $organization1 = Organization::factory()->withProSubscription()->create();
+    $organization2 = Organization::factory()->withProSubscription()->create();
 
     $user1 = User::factory()->asAdmin()->create(['organization_id' => $organization1->id]);
     $user2 = User::factory()->asAdmin()->create(['organization_id' => $organization2->id]);

@@ -1,9 +1,7 @@
 <?php
 
-use App\Enums\RoleEnum;
 use App\Models\Organization;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 
 test('guests cannot access billing page', function () {
     $this->get(route('billing.index'))
@@ -12,9 +10,7 @@ test('guests cannot access billing page', function () {
 
 test('admin users can access billing page', function () {
     $organization = Organization::factory()->create();
-    $adminRole = Role::firstOrCreate(['name' => RoleEnum::Admin->value]);
-    $user = User::factory()->create(['organization_id' => $organization->id]);
-    $user->assignRole($adminRole);
+    $user = User::factory()->asAdmin()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
         ->get(route('billing.index'))
@@ -24,9 +20,7 @@ test('admin users can access billing page', function () {
 
 test('non-admin users cannot access billing page', function () {
     $organization = Organization::factory()->create();
-    $userRole = Role::firstOrCreate(['name' => RoleEnum::User->value]);
-    $user = User::factory()->create(['organization_id' => $organization->id]);
-    $user->assignRole($userRole);
+    $user = User::factory()->asUser()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
         ->get(route('billing.index'))
@@ -35,9 +29,7 @@ test('non-admin users cannot access billing page', function () {
 
 test('viewer users cannot access billing page', function () {
     $organization = Organization::factory()->create();
-    $viewerRole = Role::firstOrCreate(['name' => RoleEnum::Viewer->value]);
-    $user = User::factory()->create(['organization_id' => $organization->id]);
-    $user->assignRole($viewerRole);
+    $user = User::factory()->asViewer()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
         ->get(route('billing.index'))
@@ -46,9 +38,7 @@ test('viewer users cannot access billing page', function () {
 
 test('billing page shows current plan', function () {
     $organization = Organization::factory()->create();
-    $adminRole = Role::firstOrCreate(['name' => RoleEnum::Admin->value]);
-    $user = User::factory()->create(['organization_id' => $organization->id]);
-    $user->assignRole($adminRole);
+    $user = User::factory()->asAdmin()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
         ->get(route('billing.index'))
@@ -59,9 +49,7 @@ test('billing page shows current plan', function () {
 
 test('billing page shows usage statistics', function () {
     $organization = Organization::factory()->create();
-    $adminRole = Role::firstOrCreate(['name' => RoleEnum::Admin->value]);
-    $user = User::factory()->create(['organization_id' => $organization->id]);
-    $user->assignRole($adminRole);
+    $user = User::factory()->asAdmin()->create(['organization_id' => $organization->id]);
 
     $this->actingAs($user)
         ->get(route('billing.index'))

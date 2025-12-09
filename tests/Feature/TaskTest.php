@@ -221,7 +221,7 @@ test('users can delete their organization tasks', function () {
         ->assertRedirect(route('tasks.index'))
         ->assertSessionHas('success', 'Task deleted successfully.');
 
-    $this->assertDatabaseMissing('tasks', [
+    $this->assertSoftDeleted('tasks', [
         'id' => $task->id,
     ]);
 });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ProjectController;
@@ -51,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('users', UserController::class)
         ->only(['index', 'create', 'store', 'destroy']);
+
+    Route::get('activity-log', [ActivityLogController::class, 'index'])
+        ->name('activity-log.index');
 
     Route::resource('tasks', TaskController::class)
         ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
