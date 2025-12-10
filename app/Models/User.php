@@ -29,6 +29,7 @@ class User extends Authenticatable
         'oauth_provider',
         'oauth_id',
         'email_verified_at',
+        'email_notifications',
         'organization_id',
     ];
 
@@ -51,6 +52,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_notifications' => 'boolean',
             'password' => 'hashed',
         ];
     }

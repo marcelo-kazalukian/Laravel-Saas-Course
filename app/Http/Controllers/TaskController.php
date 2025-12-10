@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use App\Notifications\TaskAssigned;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -16,6 +17,7 @@ class TaskController extends Controller
         Gate::authorize('viewAny', Task::class);
 
         $tasks = Task::query()
+            ->with('assignedToUser')
             ->where('organization_id', auth()->user()->organization_id)
             ->orderByDesc('created_at')
             ->get();
@@ -45,7 +47,11 @@ class TaskController extends Controller
     {
         Gate::authorize('create', Task::class);
 
-        return view('tasks.create');
+        $users = auth()->user()->organization->users()->orderBy('name')->get();
+
+        return view('tasks.create', [
+            'users' => $users,
+        ]);
     }
 
     public function store(StoreTaskRequest $request): RedirectResponse
@@ -60,12 +66,17 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
-        Task::create([
+        $task = Task::create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'user_id' => $request->user()->id,
             'organization_id' => $request->user()->organization_id,
+            'assigned_to_user_id' => $validated['assigned_to_user_id'] ?? null,
         ]);
+
+        if ($task->assigned_to_user_id) {
+            $task->assignedToUser->notify(new TaskAssigned($task));
+        }
 
         return redirect()
             ->route('tasks.index')
@@ -76,14 +87,24 @@ class TaskController extends Controller
     {
         Gate::authorize('update', $task);
 
+        $users = auth()->user()->organization->users()->orderBy('name')->get();
+
         return view('tasks.edit', [
             'task' => $task,
+            'users' => $users,
         ]);
     }
 
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
-        $task->update($request->validated());
+        $validated = $request->validated();
+        $previousAssignedUserId = $task->assigned_to_user_id;
+
+        $task->update($validated);
+
+        if (isset($validated['assigned_to_user_id']) && $validated['assigned_to_user_id'] !== $previousAssignedUserId && $validated['assigned_to_user_id'] !== null) {
+            $task->assignedToUser->notify(new TaskAssigned($task));
+        }
 
         return redirect()
             ->route('tasks.index')
