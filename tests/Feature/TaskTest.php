@@ -4,7 +4,9 @@ use App\Models\Organization;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 test('guests cannot access tasks index', function () {
     $this->get(route('tasks.index'))->assertRedirect(route('login'));
@@ -537,4 +539,138 @@ test('notification is sent when unassigned task gets assigned to a user', functi
     Notification::assertSentTo($assignee, TaskAssigned::class, function ($notification) use ($task) {
         return $notification->task->id === $task->id;
     });
+});
+
+test('users can create a task with images', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $image1 = UploadedFile::fake()->image('task-image-1.jpg', 800, 600);
+    $image2 = UploadedFile::fake()->image('task-image-2.png', 1024, 768);
+
+    $this->actingAs($user)
+        ->post(route('tasks.store'), [
+            'name' => 'Task with Images',
+            'description' => 'A task that has uploaded images',
+            'images' => [$image1, $image2],
+        ])
+        ->assertRedirect(route('tasks.index'))
+        ->assertSessionHas('success', 'Task created successfully.');
+
+    $task = Task::where('name', 'Task with Images')->first();
+
+    expect($task)->not->toBeNull();
+    expect($task->getMedia('images'))->toHaveCount(2);
+});
+
+test('users can add images when updating a task', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $task = Task::factory()->create([
+        'organization_id' => $user->organization_id,
+        'user_id' => $user->id,
+    ]);
+
+    $image = UploadedFile::fake()->image('new-task-image.jpg', 800, 600);
+
+    $this->actingAs($user)
+        ->put(route('tasks.update', $task), [
+            'name' => $task->name,
+            'images' => [$image],
+        ])
+        ->assertRedirect(route('tasks.index'))
+        ->assertSessionHas('success', 'Task updated successfully.');
+
+    $task->refresh();
+
+    expect($task->getMedia('images'))->toHaveCount(1);
+});
+
+test('users can delete images when updating a task', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $task = Task::factory()->create([
+        'organization_id' => $user->organization_id,
+        'user_id' => $user->id,
+    ]);
+
+    $task->addMedia(UploadedFile::fake()->image('existing-image.jpg', 800, 600))
+        ->toMediaCollection('images');
+
+    $mediaId = $task->getFirstMedia('images')->id;
+
+    $this->actingAs($user)
+        ->put(route('tasks.update', $task), [
+            'name' => $task->name,
+            'delete_images' => [$mediaId],
+        ])
+        ->assertRedirect(route('tasks.index'))
+        ->assertSessionHas('success', 'Task updated successfully.');
+
+    $task->refresh();
+
+    expect($task->getMedia('images'))->toHaveCount(0);
+});
+
+test('image upload validation rejects non-image files', function () {
+    $user = User::factory()->create();
+    $pdfFile = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
+
+    $this->actingAs($user)
+        ->post(route('tasks.store'), [
+            'name' => 'Task with invalid file',
+            'images' => [$pdfFile],
+        ])
+        ->assertSessionHasErrors(['images.0']);
+});
+
+test('image upload validation rejects files exceeding size limit', function () {
+    $user = User::factory()->create();
+    $largeImage = UploadedFile::fake()->image('large-image.jpg')->size(6000);
+
+    $this->actingAs($user)
+        ->post(route('tasks.store'), [
+            'name' => 'Task with large image',
+            'images' => [$largeImage],
+        ])
+        ->assertSessionHasErrors(['images.0']);
+});
+
+test('task show page displays images', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $task = Task::factory()->create([
+        'organization_id' => $user->organization_id,
+        'user_id' => $user->id,
+    ]);
+
+    $task->addMedia(UploadedFile::fake()->image('show-image.jpg', 800, 600))
+        ->toMediaCollection('images');
+
+    $this->actingAs($user)
+        ->get(route('tasks.show', $task))
+        ->assertSuccessful()
+        ->assertSee('Images');
+});
+
+test('task index page displays thumbnail', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $task = Task::factory()->create([
+        'name' => 'Task with Thumbnail',
+        'organization_id' => $user->organization_id,
+        'user_id' => $user->id,
+    ]);
+
+    $task->addMedia(UploadedFile::fake()->image('thumbnail-test.jpg', 800, 600))
+        ->toMediaCollection('images');
+
+    $this->actingAs($user)
+        ->get(route('tasks.index'))
+        ->assertSuccessful()
+        ->assertSee('Task with Thumbnail');
 });

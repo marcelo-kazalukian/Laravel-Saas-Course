@@ -26,6 +26,10 @@ class UpdateTaskRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'assigned_to_user_id' => ['nullable', 'exists:users,id'],
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
+            'delete_images' => ['nullable', 'array'],
+            'delete_images.*' => ['integer'],
         ];
     }
 
@@ -34,6 +38,10 @@ class UpdateTaskRequest extends FormRequest
         return [
             'name.required' => 'Please provide a task name.',
             'name.max' => 'The task name must not exceed 255 characters.',
+            'images.max' => 'You can upload a maximum of 10 images.',
+            'images.*.image' => 'Each file must be an image.',
+            'images.*.mimes' => 'Images must be jpeg, png, gif, or webp format.',
+            'images.*.max' => 'Each image must not exceed 5MB.',
         ];
     }
 }
