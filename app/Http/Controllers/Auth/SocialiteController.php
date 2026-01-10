@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\User;
@@ -40,9 +41,10 @@ class SocialiteController extends Controller
                 'email' => $socialiteUser->getEmail(),
                 'password' => Hash::make(str()->random(24)),
                 'email_verified_at' => now(),
-                'organization_id' => $organization->id,
-                'is_admin' => true,
+                'organization_id' => $organization->id,                
             ]);
+
+            $user->assignRole(RoleEnum::Admin);  
         }
 
         auth()->login($user, remember: true);
