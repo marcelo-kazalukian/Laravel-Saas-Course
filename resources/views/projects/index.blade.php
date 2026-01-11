@@ -86,6 +86,68 @@
                     @endforelse
                 </tbody>
             </table>
+
+            <flux:table class="min-w-full">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Image') }}</flux:table.column>                    
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse ($projects as $project)
+                        <flux:table.row>                     
+                            <flux:table.cell>
+                                {{ $task->name }}
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                @can('view', $project)
+                                    <flux:button
+                                        :href="route('projects.show', $project)"
+                                        variant="ghost"
+                                        size="sm"
+                                        icon="eye"
+                                    >
+                                        {{ __('View') }}
+                                    </flux:button>
+                                @endcan
+                                @can('update', $project)
+                                    <flux:button
+                                        :href="route('projects.edit', $project)"
+                                        variant="ghost"
+                                        size="sm"
+                                        icon="pencil"
+                                    >
+                                        {{ __('Edit') }}
+                                    </flux:button>
+                                @endcan
+                                @can('delete', $project)
+                                    <form action="{{ route('projects.destroy', $project) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <flux:button
+                                            type="submit"
+                                            variant="danger"
+                                            size="sm"
+                                            icon="trash"
+                                            onclick="return confirm('Are you sure you want to delete this project?')"
+                                        >
+                                            {{ __('Delete') }}
+                                        </flux:button>
+                                    </form>
+                                @endcan
+                            </flux:table.cell>
+                        </flux:table.row>                   
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="4" class="text-center">
+                                <flux:text>
+                                    {{ __('No projects yet. Create your first project to get started.') }}
+                                </flux:text>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
         </div>
         @else
         <div class="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">

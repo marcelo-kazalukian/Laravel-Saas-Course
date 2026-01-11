@@ -16,29 +16,20 @@
             </flux:callout>
         @endif
 
-        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                <thead class="bg-zinc-50 dark:bg-zinc-800">
-                    <tr>
-                        <th class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Image') }}
-                        </th>
-                        <th class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Name') }}
-                        </th>
-                        <th class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Assigned To') }}
-                        </th>
-                        <th class="px-6 py-3 text-end text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Actions') }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
+        <div>
+            <flux:table class="min-w-full">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Image') }}</flux:table.column>
+                    <flux:table.column>{{ __('Name') }}</flux:table.column>
+                    <flux:table.column>{{ __('Assigned To') }}</flux:table.column>
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
                     @forelse ($tasks as $task)
-                        <tr>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                @if($task->getFirstMedia('images'))
+                        <flux:table.row>
+                            <flux:table.cell>
+                                @if ($task->getFirstMedia('images'))
                                     <img
                                         src="{{ $task->getFirstMediaUrl('images', 'thumb') }}"
                                         alt="{{ $task->name }}"
@@ -49,14 +40,14 @@
                                         <flux:icon name="photo" class="h-5 w-5 text-zinc-400" />
                                     </div>
                                 @endif
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                            </flux:table.cell>                        
+                            <flux:table.cell>
                                 {{ $task->name }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-600 dark:text-zinc-300">
+                            </flux:table.cell>
+                            <flux:table.cell>
                                 {{ $task->assignedToUser?->name ?? __('Unassigned') }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-end text-sm">
+                            </flux:table.cell>
+                            <flux:table.cell class="text-end">
                                 <div class="flex items-center justify-end gap-2">
                                     @can('view', $task)
                                         <flux:button
@@ -94,19 +85,19 @@
                                         </form>
                                     @endcan
                                 </div>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                        </flux:table.row>                   
                     @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-12 text-center">
-                                <flux:text class="text-zinc-500 dark:text-zinc-400">
+                        <flux:table.row>
+                            <flux:table.cell colspan="4" class="text-center">
+                                <flux:text>
                                     {{ __('No tasks yet. Create your first task to get started.') }}
                                 </flux:text>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforelse
-                </tbody>
-            </table>
+                </flux:table.rows>
+            </flux:table>
         </div>
     </div>
 </x-layouts.app>

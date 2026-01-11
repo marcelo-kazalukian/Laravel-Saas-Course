@@ -14,31 +14,24 @@
             </flux:callout>
         @endif
 
-        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                <thead class="bg-zinc-50 dark:bg-zinc-800">
-                    <tr>
-                        <th class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Name') }}
-                        </th>
-                        <th class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Email') }}
-                        </th>
-                        <th class="px-6 py-3 text-end text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                            {{ __('Actions') }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
+        <div>
+            <flux:table class="min-w-full">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Name') }}</flux:table.column>
+                    <flux:table.column>{{ __('Email') }}</flux:table.column>                    
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
                     @forelse ($users as $user)
-                        <tr>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                        <flux:table.row>                     
+                            <flux:table.cell>
                                 {{ $user->name }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
+                            </flux:table.cell>
+                            <flux:table.cell>
                                 {{ $user->email }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-end text-sm">
+                            </flux:table.cell>
+                            <flux:table.cell class="text-end">
                                 <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
@@ -52,19 +45,19 @@
                                         {{ __('Remove') }}
                                     </flux:button>
                                 </form>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                        </flux:table.row>                   
                     @empty
-                        <tr>
-                            <td colspan="3" class="px-6 py-12 text-center">
-                                <flux:text class="text-zinc-500 dark:text-zinc-400">
-                                    {{ __('You have not invited any teammates yet.') }}
+                        <flux:table.row>
+                            <flux:table.cell colspan="4" class="text-center">
+                                <flux:text>
+                                    {{ __('No users yet. Invite your first teammate to get started.') }}
                                 </flux:text>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforelse
-                </tbody>
-            </table>
+                </flux:table.rows>
+            </flux:table>
         </div>
 
         @if ($invitations->isNotEmpty())
