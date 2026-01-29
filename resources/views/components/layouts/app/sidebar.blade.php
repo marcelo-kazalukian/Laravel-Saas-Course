@@ -13,18 +13,23 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    @can('viewAny', App\Models\Task::class)
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>                    
+                    @if(session('current_location_id'))
+                        <flux:navlist.item icon="calendar-days" :href="route('calendars.calendar-resource')" :current="request()->routeIs('calendars.*')" wire:navigate>{{ __('Calendar') }}</flux:navlist.item>                        
+                        <flux:navlist.item icon="calendar-days" :href="route('reservations.index')" :current="request()->routeIs('reservations.*')" wire:navigate>{{ __('Reservations') }}</flux:navlist.item>                        
+                    @endif
+                    {{-- @can('viewAny', App\Models\Task::class)
                         <flux:navlist.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>{{ __('Tasks') }}</flux:navlist.item>
                     @endcan
                     @can('viewAny', App\Models\Project::class)
                         <flux:navlist.item icon="folder" :href="route('projects.index')" :current="request()->routeIs('projects.*')" wire:navigate>{{ __('Projects') }}</flux:navlist.item>
-                    @endcan
+                    @endcan --}}
                     @can('manage-billing')
                         <flux:navlist.item icon="credit-card" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>{{ __('Billing') }}</flux:navlist.item>
                     @endcan
                 </flux:navlist.group>
-
+                <flux:navlist.item icon="users" :href="route('locations.index')" :current="request()->routeIs('locations.*')" wire:navigate>{{ __('Locations') }}</flux:navlist.item>
+                <flux:navlist.item icon="users" :href="route('providers.provider-resource')" :current="request()->routeIs('providers.*')" wire:navigate>{{ __('Providers') }}</flux:navlist.item>
                 @can('users.viewAny')
                     <flux:navlist.group :heading="__('Administration')" class="grid">
                         <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
@@ -145,13 +150,15 @@
 
         <!-- Desktop Header -->
         <flux:header class="hidden lg:flex border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:spacer />
+            
+            @livewire('app.locations.current-location-selector')
 
-            @livewire('notifications.notification-bell')
+            {{-- @livewire('notifications.notification-bell') --}}
         </flux:header>
 
         {{ $slot }}
 
         @fluxScripts
+        <flux:toast />
     </body>
 </html>

@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * @property-read string $id
+ * @property-read string $name
+ * @property-read string|null $description
+ * @property-read string $user_id
+ * @property-read string $organization_id
+ */
 class Project extends Model
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */

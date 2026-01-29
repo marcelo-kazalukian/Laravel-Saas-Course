@@ -10,11 +10,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property-read string $id
+ * @property-read string $name
+ * @property-read string $email
+ * @property-read string|null $password
+ * @property-read string|null $oauth_provider
+ * @property-read string|null $oauth_id
+ * @property-read Carbon|null $email_verified_at
+ * @property-read bool $email_notifications
+ * @property-read string|null $organization_id
+ * @property-read string|null $default_location_id
+ */
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -34,6 +47,7 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at',
         'email_notifications',
         'organization_id',
+        'default_location_id',
     ];
 
     /**

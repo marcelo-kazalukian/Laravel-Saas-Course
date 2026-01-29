@@ -3,20 +3,28 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Livewire\App\Calendars\CalendarResource;
+use App\Livewire\App\Providers\ProviderResource;
+use App\Livewire\App\Reservations\ReservationIndex;
 use App\Livewire\Auth\AcceptInvitation;
+use App\Livewire\Public\Locations\ShowLocation;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Models\Location;
 use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home', [
+        'locations' => Location::all(),
+    ]);
 })->name('home');
 
 Route::middleware(['guest'])->group(function () {
@@ -56,8 +64,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('activity-log', [ActivityLogController::class, 'index'])
         ->name('activity-log.index');
 
-    Route::resource('tasks', TaskController::class)
-        ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('tasks', TaskController::class);
+
+    Route::resource('locations', LocationController::class);
+
+    Route::get('calendars', CalendarResource::class)->name('calendars.calendar-resource');
+
+    Route::get('providers', ProviderResource::class)->name('providers.provider-resource');
+
+    Route::get('reservations', ReservationIndex::class)->name('reservations.index');
 
     Route::resource('projects', ProjectController::class);
 
@@ -81,3 +96,5 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
+
+Route::get('/b/{slug}', ShowLocation::class);

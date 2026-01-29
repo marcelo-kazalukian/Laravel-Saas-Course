@@ -6,7 +6,17 @@ use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property-read string $id
+ * @property-read string $organization_id
+ * @property-read string $name
+ * @property-read string $email
+ * @property-read RoleEnum $role
+ * @property-read string $token
+ * @property-read Carbon|null $accepted_at
+ */
 class Invitation extends Model
 {
     /** @use HasFactory<\Database\Factories\InvitationFactory> */

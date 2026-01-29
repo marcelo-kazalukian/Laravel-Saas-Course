@@ -28,6 +28,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'projects.create',
             'projects.update',
             'projects.delete',
+            'locations.viewAny',
+            'locations.view',
+            'locations.create',
+            'locations.update',
+            'locations.delete',
+            'calendar.update',
+            'calendar.delete',
         ];
 
         foreach ($permissions as $permission) {

@@ -12,6 +12,14 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property-read string $id
+ * @property-read string $name
+ * @property-read string|null $description
+ * @property-read string $user_id
+ * @property-read string $organization_id
+ * @property-read string|null $assigned_to_user_id
+ */
 class Task extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\TaskFactory> */

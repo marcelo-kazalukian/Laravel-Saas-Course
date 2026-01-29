@@ -18,6 +18,7 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // if you change this logic, make sure to update the app\Http\Controllers\Auth\SocialiteController as well
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => [

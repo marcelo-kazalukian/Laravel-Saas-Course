@@ -5,9 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Laravel\Cashier\Billable;
 use Laravel\Cashier\Subscription;
 
+/**
+ * @property-read string $id
+ * @property-read string $name
+ * @property-read string|null $stripe_id
+ * @property-read string|null $pm_type
+ * @property-read string|null $pm_last_four
+ * @property-read Carbon|null $trial_ends_at
+ */
 class Organization extends Model
 {
     use Billable;
@@ -36,6 +45,11 @@ class Organization extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function providers(): HasMany
+    {
+        return $this->hasMany(Provider::class);
     }
 
     public function tasks(): HasMany
@@ -97,6 +111,14 @@ class Organization extends Model
         }
 
         return $this->tasksCount() < $limit;
+    }
+
+    /**
+     * Pending: See canCreateTask method for reference
+     */
+    public function canCreateLocation(): bool
+    {
+        return true;
     }
 
     public function canAccessProjects(): bool

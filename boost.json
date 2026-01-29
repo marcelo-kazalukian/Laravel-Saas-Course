@@ -1,17 +1,9 @@
 {
     "agents": [
-        "claude_code",
-        "codex",
-        "cursor"
+        "claude_code"
     ],
     "editors": [
-        "claude_code",
-        "codex",
-        "cursor",
-        "vscode"
+        "claude_code"
     ],
-    "guidelines": [
-        "laravel/fortify",
-        "filament/filament"
-    ]
+    "guidelines": []
 }

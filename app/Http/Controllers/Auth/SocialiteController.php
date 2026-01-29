@@ -30,6 +30,7 @@ class SocialiteController extends Controller
             ->first();
 
         if (! $user) {
+            // if you change this logic, make sure to update the app\Actions\Fortify\CreateNewUser action as well
             $organization = Organization::create([
                 'name' => ($socialiteUser->getName() ?? $socialiteUser->getNickname())."'s Organization",
             ]);
@@ -41,10 +42,10 @@ class SocialiteController extends Controller
                 'email' => $socialiteUser->getEmail(),
                 'password' => Hash::make(str()->random(24)),
                 'email_verified_at' => now(),
-                'organization_id' => $organization->id,                
+                'organization_id' => $organization->id,
             ]);
 
-            $user->assignRole(RoleEnum::Admin);  
+            $user->assignRole(RoleEnum::Admin);
         }
 
         auth()->login($user, remember: true);
