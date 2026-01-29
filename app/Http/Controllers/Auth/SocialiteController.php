@@ -45,7 +45,7 @@ class SocialiteController extends Controller
                 'organization_id' => $organization->id,
             ]);
 
-            $user->assignRole(RoleEnum::Admin);
+            $user->assignRole(RoleEnum::Admin);            
         }
 
         auth()->login($user, remember: true);

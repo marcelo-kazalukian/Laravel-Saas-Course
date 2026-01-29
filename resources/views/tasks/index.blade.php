@@ -16,19 +16,20 @@
             </flux:callout>
         @endif
 
-        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:table>
+        <div>
+            <flux:table class="min-w-full">
                 <flux:table.columns>
                     <flux:table.column>{{ __('Image') }}</flux:table.column>
                     <flux:table.column>{{ __('Name') }}</flux:table.column>
                     <flux:table.column>{{ __('Assigned To') }}</flux:table.column>
                     <flux:table.column>{{ __('Actions') }}</flux:table.column>
                 </flux:table.columns>
+
                 <flux:table.rows>
-                    <flux:table.row>
-                        @forelse ($tasks as $task)
+                    @forelse ($tasks as $task)
+                        <flux:table.row>
                             <flux:table.cell>
-                                @if($task->getFirstMedia('images'))
+                                @if ($task->getFirstMedia('images'))
                                     <img
                                         src="{{ $task->getFirstMediaUrl('images', 'thumb') }}"
                                         alt="{{ $task->name }}"
@@ -39,14 +40,18 @@
                                         <flux:icon name="photo" class="h-5 w-5 text-zinc-400" />
                                     </div>
                                 @endif
-                            </flux:table.cell>
+                            </flux:table.cell>                        
                             <flux:table.cell>
                                 {{ $task->name }}
                             </flux:table.cell>
                             <flux:table.cell>
                                 {{ $task->assignedToUser?->name ?? __('Unassigned') }}
                             </flux:table.cell>
+<<<<<<< HEAD
                             <flux:table.cell>
+=======
+                            <flux:table.cell class="text-end">
+>>>>>>> 341c9593911b0857716c9c33d157d13a7176b0a3
                                 <div class="flex items-center justify-end gap-2">
                                     @can('view', $task)
                                         <flux:button
@@ -85,6 +90,7 @@
                                     @endcan
                                 </div>
                             </flux:table.cell>
+<<<<<<< HEAD
                         @empty
                             <tr>
                                 <td colspan="4" class="px-6 py-12 text-center">
@@ -97,6 +103,20 @@
                     </flux:table.row>                
                 </flux:table.rows>
             </flux:table>           
+=======
+                        </flux:table.row>                   
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="4" class="text-center">
+                                <flux:text>
+                                    {{ __('No tasks yet. Create your first task to get started.') }}
+                                </flux:text>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
+>>>>>>> 341c9593911b0857716c9c33d157d13a7176b0a3
         </div>
     </div>
 </x-layouts.app>
